@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Partha's Code Player</title>
+
+    <link href="jQ/jquery-ui.css" rel="stylesheet">
+
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script src="jQ/jquery-ui.js"></script>
+
+    <style type="text/css">
+        body {
+            font-family: sans-serif;
+            padding: 0;
+            margin: 0;
+        }
+        
+        #header {
+            width: 100%;
+            height: 30px;
+            background-color: lightgrey;
+            padding: 5px;
+        }
+        
+        #logo {
+            color: darkslategrey;
+            float: left;
+            font-weight: bold;
+            font-size: 120%;
+            padding: 3px 5px;
+        }
+        
+        #buttonContainer {
+            width: 233px;
+            margin: 0 auto;
+        }
+        
+        .toggleButton {
+            float: left;
+            border: 1px ridge grey;
+            padding: 6px;
+            border-right: none;
+            font-size: 90%;
+            cursor: pointer;
+        }
+        
+        #html {
+            border-top-left-radius: 4px;
+            border-bottom-left-radius: 4px;
+        }
+        
+        #output {
+            border-top-right-radius: 4px;
+            border-bottom-right-radius: 4px;
+            border-right: 1px gray ridge;
+        }
+        
+        .active {
+            background-color: lightblue;
+        }
+        
+        .highlightedButton {
+            background-color: grey;
+        }
+        
+        iframe {
+            border: none;
+        }
+        
+        textarea {
+            resize: none;
+            border-top: none;
+            border-color: grey;
+        }
+        
+        .panel {
+            float: left;
+            width: 50%;
+            border-left: none;
+        }
+        
+        .hidden {
+            display: none;
+        }
+    </style>
+
+</head>
+
+<body>
+    <div id="header">
+        <div id="logo">
+            Parth's Coder
+        </div>
+        <div id="buttonContainer">
+            <div class="toggleButton active" id="html">HTML</div>
+            <!--We can use multiple classes for one element by separating them with space.-->
+            <div class="toggleButton" id="css">CSS</div>
+            <div class="toggleButton" id="javascript">javaScript</div>
+            <div class="toggleButton active" id="output">Output</div>
+        </div>
+    </div>
+    <div id="bodyContainer">
+        <textarea id="htmlPanel" class="panel"><p id="paragraph">Hello world!</p></textarea>
+        <textarea id="cssPanel" class="panel hidden">p {color:green;}</textarea>
+        <textarea id="javascriptPanel" class="panel hidden">document.getElementById("paragraph").innerHTML="Hello Partha"</textarea>
+        <iframe id="outputPanel" class="panel"></iframe>
+        <!--Using an iframe enables us to make the content not adapt any style from our css whic is ideal for the user to edit their own styles.-->
+    </div>
+
+    <script type="text/javascript">
+        function updateOutput() {
+            $("iframe").contents().find("html").html("<html><head><style type='text/css'>" + $("#cssPanel").val() + "</style></head><body>" + $("#htmlPanel").val() + "</body></html>");
+            //It will change the inner html contents of the iframe with the values of te codes on the panels of css and html and make them functional .
+            document.getElementById("outputPanel").contentWindow.eval($("#javascriptPanel").val());
+            //It will bring the javascript from the javascript panel and evaluate it within the content window of the iframe.
+        }
+        $(".toggleButton").hover(function() {
+            $(this).addClass("highlightedButton"); //There are two functions in this hover one is when the curser is hovered in and the other is upon hoverout.
+        }, function() {
+            $(this).removeClass("highlightedButton");
+        });
+        $(".toggleButton").click(function() {
+            $(this).toggleClass("active") //This will toggle the styling of the class "active" upon clicking a button.
+            $(this).removeClass("highlightedButton") //This will make the butons lightblue immediately after clicking irrespective of the hover. 
+            var panelId = $(this).attr("id") + "Panel" //This wil get us the id of the button we clicked on.
+            $("#" + panelId).toggleClass("hidden"); //this will togle the respective class according to the panel id.
+            var numberOfActivePanels = 4 - $('.hidden').length; // This is all panels-no of active panels.
+
+            $(".panel").width(($(window).width() / numberOfActivePanels) - 10);
+        });
+        $(".panel").height($(window).height() - $("#header").height() - 15); //The last bits are just to maintain the paddings.
+        $(".panel").width(($(window).width() / 2) - 10); //If we don't add the padding bits then the i frame will go down.
+        updateOutput(); //by this the output will be updated on the loading of the page
+        $("textarea").on('change keyup paste', function() { //this is how we linked the code with a event of typing in the text area.
+            updateOutput(); //by this the output will be updated whenever the code is modified.
+        });
+    </script>
+</body>
+
+</html>
